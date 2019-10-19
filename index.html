@@ -1,7 +1,32 @@
 <!DOCTYPE html>
 <html>
   <body>
+    <div id="total-rounds"></div>
+    <div id="player-score"></div>
+    <div id="computer-score"></div>
+
+    <button type="button" id="rock" value="rock">Rock</button>
+    <button type="button" id="paper" value="paper">Paper</button>
+    <button type="button" id="scissors" value="scissors">Scissors</button>
+    <div id="results"></div>
+
     <script>
+      const buttons = document.querySelectorAll("button");
+      const result = document.querySelector("#results");
+      const playerScoreElem = document.querySelector("#player-score");
+      const computerScoreElem = document.querySelector("#computer-score");
+
+      let playerScore = 0;
+      let computerScore = 0;
+
+      const totalRound = document.querySelector("#total-rounds");
+      let roundCounter = 0;
+      let bestOf = 5;
+
+      buttons.forEach(button => {
+        button.addEventListener("click", playRound);
+      });
+
       function computerPlay() {
         let numberOfChoices = 3;
         choice = function() {
@@ -20,40 +45,49 @@
         }
       }
 
-      function playRound(playerSelection, computerSelection) {
-        let _playerSelection = playerSelection.toLowerCase();
+      function playRound(e) {
+        roundCounter++;
+        totalRound.innerHTML = roundCounter;
 
-        switch (true) {
-          case _playerSelection == "rock" && computerSelection == "paper":
-          case _playerSelection == "paper" && computerSelection == "scissors":
-          case _playerSelection == "scissors" && computerSelection == "rock":
-            return -1;
-            break;
+        let playerSelection = this.value;
+        let computerSelection = computerPlay();
+        result.innerHTML = decideWinner(playerSelection, computerSelection);
+        playerScoreElem.innerHTML = `Player: ${playerScore}`;
+        computerScoreElem.innerHTML = `Computer: ${computerScore}`;
 
-          case _playerSelection == "paper" && computerSelection == "rock":
-          case _playerSelection == "scissors" && computerSelection == "paper":
-          case _playerSelection == "rock" && computerSelection == "scissors":
-            return 1;
-            break;
+        if (roundCounter == bestOf) {
+          if (playerScore > computerScore) {
+            result.innerHTML = "GAME OVER: YOU WIN!";
+          } else {
+            result.innerHTML = "GAME OVER: YOU LOSE...";
+          }
+        }
 
-          case _playerSelection == computerSelection:
-            return 0;
-            break;
+        function decideWinner() {
+          switch (true) {
+            case playerSelection == "rock" && computerSelection == "paper":
+            case playerSelection == "paper" && computerSelection == "scissors":
+            case playerSelection == "scissors" && computerSelection == "rock":
+              computerScore += 1;
+              return `You Lose! ${playerSelection} loses to ${computerSelection}.`;
+              break;
 
-          default:
-            return `${playerSelection} is not an option. Please choose paper, rock, or scissors.`;
+            case playerSelection == "paper" && computerSelection == "rock":
+            case playerSelection == "scissors" && computerSelection == "paper":
+            case playerSelection == "rock" && computerSelection == "scissors":
+              playerScore += 1;
+              return `You Win! ${playerSelection} beats ${computerSelection}.`;
+              break;
+
+            case playerSelection == computerSelection:
+              return `It's a draw!`;
+              break;
+
+            default:
+              return `${playerSelection} is not an option. Please choose paper, rock, or scissors.`;
+          }
         }
       }
-
-      const game = () => {
-        let bestOf = 0;
-        for (i = 0; i < 5; i++) {
-          let playerSelection = prompt("choose paper, rock, or scissors");
-          let computerSelection = computerPlay();
-          bestOf += playRound(playerSelection, computerSelection);
-        }
-        return bestOf > 0 ? "you Win!" : "you Lose!";
-      };
     </script>
   </body>
 </html>
